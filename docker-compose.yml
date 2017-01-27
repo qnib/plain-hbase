@@ -1,0 +1,27 @@
+version: '3'
+services:
+  zookeeper:
+    image: qnib/plain-zookeeper@sha256:23a2a0fdbd92971beb65dddb083e361bf2f3fa934c8b57664a071c90878cf104
+    ports:
+      - 2181:2181
+  zkui:
+    image: qnib/plain-zkui@sha256:7009bc77e636e5114ee54b60f3c7d04866e7613e86626abd4b8be519328e25e4
+    environment:
+      - ZK_SERVER=${ZK_SERVERS-plainhbase_zookeeper_1}:2181
+    ports:
+      - 9090:9090
+    depends_on:
+      - zookeeper
+  hbase:
+    image: qnib/plain-hbase
+    environment:
+      - ZK_HOST=${ZK_HOST-plainhbase_zookeeper_1}
+      - HBASE_REGIONSERVERS=localhost
+    ports:
+      - 8080:8080
+      - 8085:8085
+      - 9095:9095
+      - 16000:16000
+      - 16010:16010
+      - 16201:16201
+      - 16301:16301
