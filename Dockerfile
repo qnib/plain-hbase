@@ -37,4 +37,7 @@ COPY opt/qnib/entry/25-hbase-zk.sh \
      opt/qnib/entry/33-hbase-thrift.sh \
      opt/qnib/entry/40-wait-for-hbase.sh \
      /opt/qnib/entry/
-CMD ["tail", "-f", "/hbase/logs/*"]
+COPY opt/qnib/hbase/bin/tail.sh /opt/qnib/hbase/bin/
+COPY opt/qnib/hbase/scripts/create_emp /opt/qnib/hbase/scripts/
+RUN echo "hbase shell /opt/qnib/hbase/scripts/create_emp" >> /root/.bash_history
+CMD /opt/qnib/hbase/bin/tail.sh
