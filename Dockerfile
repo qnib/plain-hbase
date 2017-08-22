@@ -3,32 +3,19 @@ FROM qnib/alplain-jre8
 # inspired by
 # https://github.com/HariSekhon/Dockerfiles/tree/hbase-1.2/hbase
 
-ARG HBASE_VERSION=1.2.4
-ENV PATH=$PATH:/hbase/bin \
+ARG HBASE_VERSION=1.3.1
+ARG HBASE_URL=https://archive.apache.org/dist/hbase
+ENV PATH=$PATH:/opt/hbase/bin \
     HBASE_CONF_DIR=/hbase/conf/ \
     HBASE_REGIONSERVERS=localhost \
-    ZK_HOST=localhost \
-    HBASE_MANAGES_ZK=false
+    ZK_HOST=tasks.zookeeper \
+    HBASE_MANAGES_ZK=false \
+    ENTRYPOINTS_DIR=/opt/qnib/entry
 
 VOLUME ["/tmp/hbase-root/"]
 RUN apk add --no-cache bash wget tar \
- && url="http://www.apache.org/dyn/closer.lua?filename=hbase/$HBASE_VERSION/hbase-$HBASE_VERSION-bin.tar.gz&action=download"; \
-    wget -q -t 100 --retry-connrefused -O "hbase-$HBASE_VERSION-bin.tar.gz" "$url" \
- && mkdir -p hbase-$HBASE_VERSION \
- && tar zxf hbase-$HBASE_VERSION-bin.tar.gz -C hbase-$HBASE_VERSION --strip 1 \
- && ln -sv hbase-$HBASE_VERSION hbase \
- && rm -fv hbase-$HBASE_VERSION-bin.tar.gz \
- && { rm -rf hbase/{docs,src}; : ; } \
- && apk del wget tarpk add --no-cache bash wget tar \
- && url="http://www.apache.org/dyn/closer.lua?filename=hbase/$HBASE_VERSION/hbase-$HBASE_VERSION-bin.tar.gz&action=download"; \
-    wget -q -t 100 --retry-connrefused -O "hbase-$HBASE_VERSION-bin.tar.gz" "$url" \
- && mkdir -p hbase-$HBASE_VERSION \
- && tar zxf hbase-$HBASE_VERSION-bin.tar.gz -C hbase-$HBASE_VERSION --strip 1 \
- && ln -sv hbase-$HBASE_VERSION hbase \
- && rm -fv hbase-$HBASE_VERSION-bin.tar.gz \
- && { rm -rf hbase/{docs,src}; : ; } \
- && apk del wget tar
-RUN mkdir -p /hbase/logs/
+ && wget -qO- "${HBASE_URL}/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz" |tar xfz - -C /opt/ \
+ && mv /opt/hbase-${HBASE_VERSION} /opt/hbase/
 COPY conf/hbase-site.xml /opt/qnib/hbase/conf/
 COPY opt/qnib/entry/25-hbase-zk.sh \
      opt/qnib/entry/30-hbase-master.sh \

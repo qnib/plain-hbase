@@ -7,7 +7,7 @@ services:
   zkui:
     image: qnib/plain-zkui@sha256:7009bc77e636e5114ee54b60f3c7d04866e7613e86626abd4b8be519328e25e4
     environment:
-      - ZK_SERVER=${ZK_SERVERS-plainhbase_zookeeper_1}:2181
+      - ZK_SERVER=tasks.zookeeper:2181
     ports:
       - 9090:9090
     depends_on:
@@ -15,7 +15,7 @@ services:
   hbase:
     image: qnib/plain-hbase
     environment:
-      - ZK_HOST=${ZK_HOST-plainhbase_zookeeper_1}
+      - ZK_HOST=tasks.zookeeper
       - HBASE_REGIONSERVERS=localhost
     ports:
       - 8080:8080
